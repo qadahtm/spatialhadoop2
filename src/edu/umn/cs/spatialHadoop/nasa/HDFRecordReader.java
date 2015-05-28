@@ -96,7 +96,7 @@ public class HDFRecordReader<S extends NASAShape>
   }
 
   public void initialize(InputSplit split, Configuration conf) throws IOException {
-    String datasetName = conf.get("dataset");
+    String datasetName = conf.get("dataset");    
     if (datasetName == null)
       throw new RuntimeException("Dataset name should be provided");
     inFile = ((FileSplit) split).getPath();
@@ -107,6 +107,9 @@ public class HDFRecordReader<S extends NASAShape>
       fs = FileSystem.getLocal(conf);
       this.deleteOnEnd = true;
     }
+    
+    LOG.info("=== Dataset : "+datasetName);
+    
     hdfFile = new HDFFile(fs.open(inFile));
     
     // Retrieve meta data
@@ -116,12 +119,17 @@ public class HDFRecordReader<S extends NASAShape>
     
     // Retrieve the data array
     DDVGroup dataGroup = hdfFile.findGroupByName(datasetName);
+    
+    LOG.info("=== dataGroup : "+dataGroup);
+    
     boolean fillValueFound = false;
     int resolution = 0;
     for (DataDescriptor dd : dataGroup.getContents()) {
       if (dd instanceof DDNumericDataGroup) {
         DDNumericDataGroup numericDataGroup = (DDNumericDataGroup) dd;
         unparsedDataArray = numericDataGroup.getAsByteArray();
+        LOG.info("=== unparsedDataArray : "+unparsedDataArray);
+        
         valueSize = numericDataGroup.getDataSize();
         resolution = numericDataGroup.getDimensions()[0];
         if (valueSize * resolution * resolution != unparsedDataArray.length)

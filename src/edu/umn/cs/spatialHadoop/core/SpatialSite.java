@@ -470,7 +470,7 @@ public class SpatialSite {
       if (cacheFiles == null){
         URI[] uris = DistributedCache.getCacheFiles(conf);
         for (URI uri : uris) {
-          LOG.info("found in distcache : " + uri.getPath());
+//          LOG.info("found in distributedcache : " + uri.getPath());
           if (uri.getPath().contains(cells_file)) {
             FSDataInputStream in = FileSystem.getLocal(conf).open(new Path(uri));
             
